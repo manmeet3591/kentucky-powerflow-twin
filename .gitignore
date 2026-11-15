@@ -1,0 +1,7 @@
+data/raw/
+data/dataset/
+data/datakit_tiny/
+data/*.log
+runs/
+__pycache__/
+*.pyc

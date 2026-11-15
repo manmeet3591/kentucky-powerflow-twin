@@ -1,0 +1,42 @@
+# gridfm-datakit config for the Kentucky cut (run from the repo root after pipeline/datakit_inputs.py).
+network:
+  name: "ky_case"
+  source: "file"
+  network_dir: "data/grid/datakit"
+load:
+  generator: "agg_load_profile"
+  agg_profile: "lgee_2023_2024"     # EIA-930 LGEE hourly demand, 2023-2024
+  scenarios: 2000
+  sigma: 0.05                        # per-bus noise, same as pipeline/generate_dataset.py
+  change_reactive_power: true
+  global_range: 0.6
+  max_scaling_factor: 1.3
+  step_size: 0.05
+  start_scaling_factor: 1.0
+topology_perturbation:
+  type: "random"
+  k: 1
+  n_topology_variants: 20            # 20 topologies per load scenario -> 40k samples
+  elements: [branch]
+  outage_count_probabilities: [0.15, 0.85]
+generation_perturbation:
+  type: "none"
+admittance_perturbation:
+  type: "none"
+settings:
+  num_processes: 48
+  process_backend: "process_pool_executor"
+  enable_checkpointing: true
+  data_dir: "${KPT_DATA}/datakit"
+  large_chunk_size: 200
+  overwrite: false
+  mode: "pf"
+  include_dc_res: true
+  enable_solver_logs: false
+  pf_fast: true
+  dcpf_fast: true
+  pf_solver: "powermodel"
+  opf_formulation: "polar"
+  max_iter: 200
+  coinhsl: {enabled: false, linear_solver: "ma57", hsllib: ""}
+  seed: 42

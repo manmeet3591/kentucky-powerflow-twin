@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kentucky Power Flow Twin</title>
+<meta name="description" content="What-if N-1 contingency explorer for a synthetic Kentucky-region transmission grid (ACTIVSg70k area 27): AC power flow results and a graph neural network surrogate.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Kentucky Power Flow Twin</h1>
+    <p class="sub">What-if N-1 studies on a <b>synthetic</b> Kentucky-region transmission grid · AC power flow · GNN surrogate</p>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-view="map">What-if</button>
+    <button role="tab" aria-selected="false" data-view="rank">Contingency ranking</button>
+    <button role="tab" aria-selected="false" data-view="model">Surrogate</button>
+    <button role="tab" aria-selected="false" data-view="method">Method &amp; limits</button>
+  </nav>
+</header>
+
+<main id="app">
+  <aside class="controls" aria-label="Controls">
+    <section>
+      <h2>Load level</h2>
+      <div class="levels" id="levels"></div>
+      <div class="evinfo" id="levelInfo"></div>
+    </section>
+    <section>
+      <h2>Take a line out</h2>
+      <input class="search" id="search" list="branchList" placeholder="Search a line or transformer…" autocomplete="off">
+      <datalist id="branchList"></datalist>
+      <p class="hint">Or click a line on the map.</p>
+      <div id="picked"></div>
+      <button class="link mt8" id="worstBtn">Show the worst outage at this load level</button>
+    </section>
+    <section>
+      <h2>Results from</h2>
+      <div class="seg" id="source">
+        <button data-src="solver" class="on">AC solver</button>
+        <button data-src="gnn" disabled title="Available once the surrogate is trained on TACC">GNN surrogate</button>
+      </div>
+      <p class="hint" id="sourceHint">Precomputed AC power flow (Newton-Raphson). The GNN surrogate is not trained yet.</p>
+    </section>
+    <section>
+      <h2>Show</h2>
+      <div class="seg wrap" id="kvf">
+        <button data-kv="0" class="on">All kV</button>
+        <button data-kv="138">≥138 kV</button>
+        <button data-kv="345">345 kV</button>
+      </div>
+      <label class="chk mt8"><input type="checkbox" id="showV" checked> Buses outside 0.95–1.05 pu</label>
+      <label class="chk"><input type="checkbox" id="showTies" checked> Tie lines to neighbouring states</label>
+    </section>
+  </aside>
+
+  <section class="view" id="view-map">
+    <div id="map"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <aside class="detail" id="detail" aria-label="Results"></aside>
+
+  <section class="view hidden" id="view-rank">
+    <h2 id="rankTitle">Worst single outages</h2>
+    <p class="hint">Every single outage of a rated Kentucky branch, solved with AC power flow at the selected load level. Click a row to open it on the map.</p>
+    <div class="tablewrap"><table id="rankTable"></table></div>
+  </section>
+
+  <section class="view hidden prose" id="view-model">
+    <div id="modelBody"></div>
+  </section>
+
+  <section class="view hidden prose" id="view-method">
+    <h2>What this is</h2>
+    <p>A prototype digital twin for transmission what-if studies: pick a load level, take one line or transformer out, and see the resulting branch loadings and voltage violations. Today every number on the map comes from a full AC power flow solve, precomputed for six load levels × <span class="nCont">1,473</span> outages. The graph neural network (GNN) surrogate that is meant to return the same answers in milliseconds is coded, tested on a tiny CPU run, and set up for training on TACC. Its results will appear here only after that training run, labelled as surrogate output.</p>
+
+    <h2 class="mt">The grid: synthetic, not Kentucky's real network</h2>
+    <ul>
+      <li><b>Source.</b> We use the Texas A&amp;M <b>ACTIVSg70k</b> synthetic Eastern US case (MATPOWER <code>case_ACTIVSg70k.m</code>; Birchfield et al., IEEE TPWRS 2017). It is fully synthetic. It was built by algorithm to match the statistics of real grids, contains no CEII, and models none of the actual lines. Real Kentucky transmission models are CEII and are not used.</li>
+      <li><b>Kentucky cut.</b> The case has 52 areas but no area names in the MATPOWER file. We matched bus names (synthetic substations named after nearby towns) against the Census gazetteer. In <b>area 27</b>, 85% of bus names are Kentucky places, more than in any other area, so area 27 is the Kentucky footprint. It has <span class="sInt">1,662</span> buses (69–345 kV transmission plus generator terminals), <span class="sBr">1,923</span> internal branches, <span class="sLoad">17.4 GW</span> of base load and <span class="sGen">21.6 GW</span> of in-service generator capacity.</li>
+      <li><b>The rest of the Eastern Interconnection</b> (68,184 buses) is replaced by an extended-Ward equivalent. The 154 neighbouring buses tied to area 27 are kept as boundary buses. All other external buses are eliminated by Kron reduction of the full 70k-bus admittance matrix. This leaves 595 equivalent branches between boundary buses, and each boundary bus gets a voltage-holding equivalent generator. The reduced model reproduces the stored ACTIVSg70k solution to within 0.34 MW and 1e-5 pu.</li>
+      <li><b>Coordinates are approximate.</b> Each bus is placed at the centroid of the town its synthetic name refers to: 1,559 from the Census gazetteer. The other 257 buses (small communities that are not Census places) are placed at the mean position of their connected neighbours, kept inside Kentucky. Lines are drawn as straight segments, so map geometry is schematic and does not show real rights-of-way.</li>
+    </ul>
+
+    <h2 class="mt">Load and weather</h2>
+    <ul>
+      <li><b>Demand shapes</b> come from EIA-930 hourly demand for 2023–2024. LGEE (LG&amp;E/KU) drives central and eastern buses, and TVA drives buses west of 86.8°W. A scale of 1.0 means the ACTIVSg base load, which we take as the coincident peak. Each region's hourly scale is its demand divided by its 2023–24 maximum.</li>
+      <li><b>Load levels</b> on this page are real hours: the spring-night minimum, the median hour, the winter peak (17 Jan 2024) and the summer peak. Two hypothetical stress cases add 10% and 20% to the summer peak.</li>
+      <li><b>Weather.</b> ERA5 2 m temperature and 10 m wind at five Kentucky points come from the Open-Meteo archive. They are shown for each load level and enter the surrogate as node features. Line ratings are <i>static</i> (rateA); weather does not change them here. Dynamic line ratings are a separate DSOC prototype.</li>
+      <li><b>Dispatch.</b> When load changes, Kentucky units are scaled pro rata, capped at Pmax. Anything they cannot cover is taken by the boundary equivalents in proportion to their tie-line ratings. This is a proxy for unit commitment and market dispatch; it is not an economic dispatch.</li>
+    </ul>
+
+    <h2 class="mt">Power flow and contingencies</h2>
+    <ul>
+      <li>The solver is a full AC Newton-Raphson power flow in polar form, using pandapower's PYPOWER Jacobian routines on the MATPOWER arrays. It takes about 0.1 s per case on one CPU core. pandapower's table converter put some ACTIVSg transformer taps on the wrong side, so we bypass it.</li>
+      <li>The N-1 set is every rated Kentucky branch (<span class="nCont">1,473</span>). For 169 of these the outage islands part of the network, typically a generator step-up transformer or a radial tap. The islanded buses are dropped and their load is reported as lost.</li>
+      <li><b>Violations.</b> A branch counts as overloaded above 100% of rateA, taking the larger of the from-end and to-end MVA. A Kentucky bus at 69 kV or above has a voltage violation outside 0.95–1.05 pu. The 0.90–1.10 emergency band is also counted. Generator step-up terminals are not monitored.</li>
+      <li>Not modelled: generator reactive limits (PV buses always hold voltage), automatic transformer taps and phase shifter control, and remedial action schemes. Shunt capacitors are switched by a simple load-based proxy. There is no post-contingency redispatch, no N-1-1 or N-2, and no stability or short-circuit analysis.</li>
+    </ul>
+
+    <h2 class="mt">GNN surrogate</h2>
+    <ul>
+      <li><b>Model.</b> An edge-conditioned message-passing network: 12 layers, 128 hidden units, a global context term, and residual connections with LayerNorm. Its inputs are bus injections, voltage setpoints, bus type, kV, shunts and local weather, plus branch impedance, tap and rating. The outaged branch is switched off with a per-sample edge mask. It predicts bus voltage magnitudes and angles, from-end P/Q flows and branch loading. An optional physics term recomputes flows from the predicted voltages with each branch's pi model.</li>
+      <li><b>Training data.</b> Each sample combines an EIA-930 hour with ±5% per-bus noise, a 1.0–1.25× stress stretch on 25% of samples, and either no outage (15%) or one random outage (85%). Samples are solved with the same AC solver: 40k training samples on a TACC CPU node.</li>
+      <li><b>Held-out tests.</b> Training uses 2023 hours only. The tests use 2024 hours with (a) outages of lines seen in training and (b) outages of 130 lines (10%) that are <i>never</i> taken out in training. The surrogate is scored against the AC solver and a DC power flow baseline on voltage error, loading error, and overload and voltage-violation recall and precision.</li>
+      <li><b>IBM GridFM tools.</b> The repo also produces the same Kentucky case for <code>gridfm-datakit</code>, with PowerModels.jl AC power flow, random N-1 and an LGEE load profile, plus a <code>gridfm-graphkit</code> heterogeneous GNS config. The GENCO-style models can then be trained or fine-tuned on Kentucky for comparison. Both tools were presented at GridFM Harvard 2026.</li>
+      <li><b>Independent solver check.</b> A small datakit run (8 N-1 cases) was solved with PowerModels.jl. Each solution satisfies our network model with zero active-power mismatch and identical branch flows (<code>pipeline/check_datakit.py</code>).</li>
+    </ul>
+
+    <h2 class="mt">Limits worth repeating</h2>
+    <ul>
+      <li>This is a synthetic grid. No result here says anything about a real Kentucky line, substation or utility.</li>
+      <li>The external equivalent is fixed at one operating point. Outside Kentucky it cannot represent loop flows that change with outages.</li>
+      <li>The surrogate is not a substitute for a security-constrained solver. Its intended use is fast screening, with the flagged cases re-run in the AC solver.</li>
+    </ul>
+    <p class="hint">Code and job scripts: see the repository README. Data: TAMU ACTIVSg70k via MATPOWER, EIA-930, ERA5 (Copernicus/ECMWF via Open-Meteo), US Census gazetteer.</p>
+  </section>
+</main>
+
+<footer class="foot">Disaster Science Operations Center · prototype · synthetic grid (TAMU ACTIVSg70k) · data: EIA-930, ERA5 via Open-Meteo, US Census · basemap © Esri, © OpenStreetMap contributors</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "source": "ACTIVSg70k (TAMU, MATPOWER data/case_ACTIVSg70k.m), area 27",
+  "internal_buses": 1662,
+  "boundary_buses": 154,
+  "eliminated_buses": 68184,
+  "internal_branches": 1923,
+  "tie_branches": 219,
+  "equivalent_branches": 595,
+  "internal_load_mw": 17447.97,
+  "internal_gen_mw": 15776.22,
+  "internal_gen_pmax_mw": 21621.300000000003,
+  "net_import_mw": 3328.6891219765666,
+  "coord_sources": {
+    "gazetteer": 1559,
+    "neighbour-mean": 257
+  },
+  "max_p_mismatch_mw_at_stored_solution": 0.3415030530904218
+}

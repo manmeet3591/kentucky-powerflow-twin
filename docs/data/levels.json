@@ -1,0 +1,158 @@
+[
+ {
+  "key": "light",
+  "label": "Light load: spring night minimum",
+  "time_utc": "2023-05-29T10:00:00",
+  "lgee": 0.3390406482812704,
+  "tva": 0.342697446944776,
+  "lgee_mw": 2594.0,
+  "tva_mw": 11772.0,
+  "weather": {
+   "temperature_2m_bowling_green": 15.0,
+   "temperature_2m_lexington": 12.7,
+   "temperature_2m_louisville": 14.7,
+   "temperature_2m_paducah": 16.4,
+   "temperature_2m_pikeville": 14.6,
+   "wind_speed_10m_bowling_green": 0.9,
+   "wind_speed_10m_lexington": 2.2,
+   "wind_speed_10m_louisville": 1.2,
+   "wind_speed_10m_paducah": 1.1,
+   "wind_speed_10m_pikeville": 1.2
+  },
+  "timing": {
+   "base_s": 0.255,
+   "outage_mean_s": 0.0831,
+   "n": 1473
+  }
+ },
+ {
+  "key": "typical",
+  "label": "Typical: median hour",
+  "time_utc": "2024-08-12T13:00:00",
+  "lgee": 0.5153574696118155,
+  "tva": 0.5127070536520043,
+  "lgee_mw": 3943.0,
+  "tva_mw": 17612.0,
+  "weather": {
+   "temperature_2m_bowling_green": 19.2,
+   "temperature_2m_lexington": 16.6,
+   "temperature_2m_louisville": 18.0,
+   "temperature_2m_paducah": 21.2,
+   "temperature_2m_pikeville": 18.6,
+   "wind_speed_10m_bowling_green": 0.9,
+   "wind_speed_10m_lexington": 0.9,
+   "wind_speed_10m_louisville": 0.8,
+   "wind_speed_10m_paducah": 1.7,
+   "wind_speed_10m_pikeville": 0.7
+  },
+  "timing": {
+   "base_s": 0.31,
+   "outage_mean_s": 0.0858,
+   "n": 1473
+  }
+ },
+ {
+  "key": "winter_peak",
+  "label": "Winter peak hour",
+  "time_utc": "2024-01-17T14:00:00",
+  "lgee": 1.0,
+  "tva": 1.0,
+  "lgee_mw": 7651.0,
+  "tva_mw": 34351.0,
+  "weather": {
+   "temperature_2m_bowling_green": -16.6,
+   "temperature_2m_lexington": -12.8,
+   "temperature_2m_louisville": -12.2,
+   "temperature_2m_paducah": -11.3,
+   "temperature_2m_pikeville": -14.3,
+   "wind_speed_10m_bowling_green": 3.5,
+   "wind_speed_10m_lexington": 3.7,
+   "wind_speed_10m_louisville": 3.9,
+   "wind_speed_10m_paducah": 3.5,
+   "wind_speed_10m_pikeville": 2.9
+  },
+  "timing": {
+   "base_s": 0.128,
+   "outage_mean_s": 0.0888,
+   "n": 1473
+  }
+ },
+ {
+  "key": "summer_peak",
+  "label": "Summer peak hour",
+  "time_utc": "2023-08-25T21:00:00",
+  "lgee": 0.9637955822768266,
+  "tva": 0.9253879071933859,
+  "lgee_mw": 7374.0,
+  "tva_mw": 31788.0,
+  "weather": {
+   "temperature_2m_bowling_green": 38.8,
+   "temperature_2m_lexington": 30.0,
+   "temperature_2m_louisville": 34.8,
+   "temperature_2m_paducah": 37.3,
+   "temperature_2m_pikeville": 32.9,
+   "wind_speed_10m_bowling_green": 3.1,
+   "wind_speed_10m_lexington": 2.8,
+   "wind_speed_10m_louisville": 2.7,
+   "wind_speed_10m_paducah": 2.0,
+   "wind_speed_10m_pikeville": 0.9
+  },
+  "timing": {
+   "base_s": 0.347,
+   "outage_mean_s": 0.0873,
+   "n": 1473
+  }
+ },
+ {
+  "key": "stress110",
+  "label": "Stress: summer peak +10% (hypothetical)",
+  "time_utc": "2023-08-25T21:00:00",
+  "lgee": 1.0601751405045095,
+  "tva": 1.0179266979127246,
+  "lgee_mw": 8111.400000000001,
+  "tva_mw": 34966.8,
+  "weather": {
+   "temperature_2m_bowling_green": 38.8,
+   "temperature_2m_lexington": 30.0,
+   "temperature_2m_louisville": 34.8,
+   "temperature_2m_paducah": 37.3,
+   "temperature_2m_pikeville": 32.9,
+   "wind_speed_10m_bowling_green": 3.1,
+   "wind_speed_10m_lexington": 2.8,
+   "wind_speed_10m_louisville": 2.7,
+   "wind_speed_10m_paducah": 2.0,
+   "wind_speed_10m_pikeville": 0.9
+  },
+  "timing": {
+   "base_s": 0.237,
+   "outage_mean_s": 0.0888,
+   "n": 1473
+  }
+ },
+ {
+  "key": "stress120",
+  "label": "Stress: summer peak +20% (hypothetical)",
+  "time_utc": "2023-08-25T21:00:00",
+  "lgee": 1.156554698732192,
+  "tva": 1.110465488632063,
+  "lgee_mw": 8848.8,
+  "tva_mw": 38145.6,
+  "weather": {
+   "temperature_2m_bowling_green": 38.8,
+   "temperature_2m_lexington": 30.0,
+   "temperature_2m_louisville": 34.8,
+   "temperature_2m_paducah": 37.3,
+   "temperature_2m_pikeville": 32.9,
+   "wind_speed_10m_bowling_green": 3.1,
+   "wind_speed_10m_lexington": 2.8,
+   "wind_speed_10m_louisville": 2.7,
+   "wind_speed_10m_paducah": 2.0,
+   "wind_speed_10m_pikeville": 0.9
+  },
+  "timing": {
+   "base_s": 0.352,
+   "outage_mean_s": 0.0879,
+   "n": 1473
+  }
+ }
+]
